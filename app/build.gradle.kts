@@ -61,6 +61,18 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation (libs.tensorflow.lite)
     implementation (libs.tensorflow.lite.support)
+    val camerax_version = "1.3.1"
 
+    implementation (libs.androidx.camera.core)
+    implementation( libs.androidx.camera.camera2)
+    implementation (libs.androidx.camera.lifecycle)
+    implementation (libs.androidx.camera.view)
+    implementation (libs.androidx.camera.extensions)
+    implementation( libs.play.services.location)
+    // Accompanist Permissions (for rememberPermissionState)
+    implementation (libs.accompanist.permissions)
+
+// Exif interface for geotagging
+    implementation (libs.androidx.exifinterface)
 
 }

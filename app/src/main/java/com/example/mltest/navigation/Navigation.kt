@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Color
 
 import androidx.navigation.compose.*
 import androidx.navigation.compose.rememberNavController
+import com.example.mltest.screens.HomeScreen
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -78,7 +79,7 @@ fun Botsheet(context: Context) {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable("home") { HomeScreen() }
-            composable("sightinghistory") { SightingHistoryScreen() }
+          //  composable("sightinghistory") { SightingHistoryScreen() }
         }
     }
 }
