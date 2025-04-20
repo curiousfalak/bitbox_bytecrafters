@@ -107,7 +107,7 @@ Open issues or contribute via pull requests to support marine conservation tech.
 ## 📸 Screenshots
 
 ![Geotagged Preview](https://github.com/curiousfalak/bitbox_bytecrafters/raw/main/Screenshot%202025-04-20%20141722.png?raw=true)
-
+![Geotagged Preview]()
 
 
 
