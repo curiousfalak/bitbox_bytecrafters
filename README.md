@@ -7,7 +7,7 @@ An Android app built with Kotlin + Jetpack Compose for real-time marine biodiver
 
 ## 🚀 Project Overview
 
-**Marine Species Watch** enables users to:
+**Nature Lens** enables users to:
 
 - Identify marine species using an AI model  
 - Automatically tag sightings with location data  
