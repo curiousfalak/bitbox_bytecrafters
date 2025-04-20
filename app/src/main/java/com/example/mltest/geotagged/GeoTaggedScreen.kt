@@ -77,22 +77,23 @@ fun GeotaggedScreen() {
 
     LaunchedEffect(locationPermission.status) {
         if (locationPermission.status.isGranted) {
-            val locationTask: Task<Location> = fusedLocationClient.lastLocation
-            locationTask.addOnSuccessListener { location ->
+            fusedLocationClient.getCurrentLocation(
+                com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY,
+                null
+            ).addOnSuccessListener { location ->
                 if (location != null) {
                     latitude = location.latitude.toString()
                     longitude = location.longitude.toString()
                     locationError = null
                 } else {
                     locationError = "Location is not available"
-                    Log.e("LocationError", "Location is null")
                 }
             }.addOnFailureListener {
                 locationError = "Failed to fetch location: ${it.message}"
-                Log.e("LocationError", "Error fetching location: ${it.message}")
             }
         }
     }
+
 
     // 6. Display the camera preview + geotag (latitude, longitude)
     Scaffold { padding ->
