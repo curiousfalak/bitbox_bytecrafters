@@ -121,20 +121,16 @@ fun ClassifierScreen() {
             Spacer(modifier = Modifier.height(16.dp))
             Text("Prediction Result", style = typography.titleLarge)
 
-            Image(
-                bitmap = result.bitmap!!.asImageBitmap(),
-                contentDescription = "Result Image",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(250.dp)
-                    .clip(RoundedCornerShape(12.dp))
-            )
+
 
             Text("Species: ${result.speciesName}", style = typography.headlineSmall)
             Text("Confidence: ${"%.2f".format(result.confidenceScore * 100)}%", style = typography.bodyLarge)
 
-            // Optionally show details screen below (SpeciesResultScreen)
-            SpeciesResultScreen(speciesResult = result)
+                Text(text = "IUCN Category: Least Concern")
+
+
+
+
         }
     }
 }
@@ -146,35 +142,3 @@ data class SpeciesResult(
 
 
 
-
-
-@Composable
-fun SpeciesResultScreen(speciesResult: SpeciesResult) {
-    speciesResult.bitmap?.let { bmp ->
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
-            shape = RoundedCornerShape(12.dp)
-        ) {
-            Column(
-                modifier = Modifier
-                    .padding(16.dp)
-            ) {
-                Image(
-                    bitmap = bmp.asImageBitmap(),
-                    contentDescription = "Species Image",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .clip(RoundedCornerShape(10.dp))
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Text("Species: ${speciesResult.speciesName}", style = typography.headlineSmall)
-                Text("Confidence: ${"%.2f".format(speciesResult.confidenceScore * 100)}%", style = typography.bodyLarge)
-            }
-        }
-    }
-}

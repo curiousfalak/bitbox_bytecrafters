@@ -4,6 +4,7 @@ package com.example.mltest.geotagged
 
 import android.content.ContentValues
 import android.content.Context
+import android.graphics.Bitmap
 import android.location.Location
 import android.net.Uri
 import android.os.Environment
@@ -28,6 +29,9 @@ import android.media.ExifInterface
 import android.provider.MediaStore
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
@@ -115,47 +119,47 @@ suspend fun getCurrentLocation(context: Context): Location? {
 }
 
 
-private fun capturePhotoWithGeoTag(
-    context: Context,
-    controller: LifecycleCameraController,
-    location: Location?,
-    onDone: () -> Unit
-) {
-    val file = getOutputFile(context)
-    val outputOptions = ImageCapture.OutputFileOptions.Builder(file).build()
-
-    controller.takePicture(
-        outputOptions,
-        ContextCompat.getMainExecutor(context),
-        object : ImageCapture.OnImageSavedCallback {
-            override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                location?.let {
-                    try {
-                        val exif = ExifInterface(file.absolutePath)
-
-                        exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE, convertToDMS(it.latitude))
-                        exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE_REF, if (it.latitude >= 0) "N" else "S")
-
-                        exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, convertToDMS(it.longitude))
-                        exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF, if (it.longitude >= 0) "E" else "W")
-
-                        exif.saveAttributes()
-                    } catch (e: IOException) {
-                        e.printStackTrace()
-                    }
-                }
-
-                Toast.makeText(context, "Photo saved: ${file.name}", Toast.LENGTH_SHORT).show()
-                onDone()
-            }
-
-            override fun onError(exception: ImageCaptureException) {
-                Toast.makeText(context, "Capture failed: ${exception.message}", Toast.LENGTH_SHORT).show()
-                onDone()
-            }
-        }
-    )
-}
+//private fun capturePhotoWithGeoTag(
+//    context: Context,
+//    controller: LifecycleCameraController,
+//    location: Location?,
+//    onDone: () -> Unit
+//) {
+//    val file = getOutputFile(context)
+//    val outputOptions = ImageCapture.OutputFileOptions.Builder(file).build()
+//
+//    controller.takePicture(
+//        outputOptions,
+//        ContextCompat.getMainExecutor(context),
+//        object : ImageCapture.OnImageSavedCallback {
+//            override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+//                location?.let {
+//                    try {
+//                        val exif = ExifInterface(file.absolutePath)
+//
+//                        exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE, convertToDMS(it.latitude))
+//                        exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE_REF, if (it.latitude >= 0) "N" else "S")
+//
+//                        exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, convertToDMS(it.longitude))
+//                        exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF, if (it.longitude >= 0) "E" else "W")
+//
+//                        exif.saveAttributes()
+//                    } catch (e: IOException) {
+//                        e.printStackTrace()
+//                    }
+//                }
+//
+//                Toast.makeText(context, "Photo saved: ${file.name}", Toast.LENGTH_SHORT).show()
+//                onDone()
+//            }
+//
+//            override fun onError(exception: ImageCaptureException) {
+//                Toast.makeText(context, "Capture failed: ${exception.message}", Toast.LENGTH_SHORT).show()
+//                onDone()
+//            }
+//        }
+//    )
+//}
 private fun saveImageToGallery(context: Context, file: File): Uri? {
     val values = ContentValues().apply {
         put(MediaStore.Images.Media.DISPLAY_NAME, file.name)
@@ -231,4 +235,13 @@ private fun convertToDMS(coordinate: Double): String {
     val seconds = ((minutesDecimal - minutes) * 60)
 
     return "$degrees/1,$minutes/1,${(seconds * 10000).toInt()}/10000"
+}
+class MainViewModel: ViewModel(){
+    private val _bitmaps= MutableStateFlow<List<Bitmap>>(emptyList())
+    val bitmaps=_bitmaps.asStateFlow()
+
+    fun onTakePhoto(bitmap:Bitmap){
+        _bitmaps.value=_bitmaps.value+bitmap
+    }
+
 }

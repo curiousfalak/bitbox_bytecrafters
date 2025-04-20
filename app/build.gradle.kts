@@ -74,5 +74,6 @@ dependencies {
 
 // Exif interface for geotagging
     implementation (libs.androidx.exifinterface)
+    implementation(libs.coil.compose)
 
 }

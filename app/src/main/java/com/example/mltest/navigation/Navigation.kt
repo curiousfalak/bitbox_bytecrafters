@@ -11,8 +11,12 @@ import androidx.compose.ui.graphics.Color
 
 import androidx.navigation.compose.*
 import androidx.navigation.compose.rememberNavController
+import com.example.mltest.aquatic_species_mlmodel.ClassifierScreen
+
+import com.example.mltest.geotagged.GeotaggedScreen
+import com.example.mltest.screens.History
 import com.example.mltest.screens.HomeScreen
-import kotlinx.coroutines.launch
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,8 +31,8 @@ fun Botsheet(context: Context) {
 
             if (currentRoute in listOf("home", "sightinghistory")) {
                 TopAppBar(
-                    title = { Text("SoulSpace", color = Color.Black) },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFFF0F0FF)),
+                    title = { Text("Nature Lens", color = Color.Black) },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF78C4E5)),
                     actions = {
                         IconButton(onClick = { isNotificationEnabled = !isNotificationEnabled }) {
                             Icon(
@@ -46,10 +50,10 @@ fun Botsheet(context: Context) {
             val currentRoute = navBackStackEntry.value?.destination?.route
 
             if (currentRoute in listOf("home", "sightinghistory")) {
-                BottomAppBar(containerColor = Color.Black) {
+                BottomAppBar(containerColor = Color(0xFF78C4E5)) {
                     val bottomBarItems = listOf(
                         Triple(Icons.Default.Home, "Home", "home"),
-                        Triple(Icons.Default., "Sightings", "sightinghistory")
+                        Triple(Icons.Default.Menu, "Sightings", "sightinghistory")
                     )
 
                     bottomBarItems.forEach { (icon, description, route) ->
@@ -78,8 +82,13 @@ fun Botsheet(context: Context) {
             startDestination = "home",
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable("home") { HomeScreen() }
-          //  composable("sightinghistory") { SightingHistoryScreen() }
+
+                composable("home") { HomeScreen(navController) }
+                composable("camera") { GeotaggedScreen() } // Add route for CameraX screen
+                composable("classifier") { ClassifierScreen() }
+        composable("sightinghistory") { History() }// Add route for Classifier screen
+            }
+
         }
     }
-}
+
