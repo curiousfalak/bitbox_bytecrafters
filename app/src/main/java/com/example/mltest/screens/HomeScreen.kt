@@ -1,150 +1,76 @@
-package com.example.mltest.screens
+package com.example.mltest.alert
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
+import android.annotation.SuppressLint
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.os.Build
+import androidx.core.app.NotificationCompat
+import com.example.mltest.MainActivity
 import com.example.mltest.R
 
+class CounterNotification(context: Context) {
+    private val notificationManager =
+        context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
+    @SuppressLint("NotificationPermission")
+    fun showNotification(counter: Int) {
+        // 🔧 Ensure the notification channel is created
+        createNotificationChannel()
 
-
-@Composable
-fun HomeScreen(nav: NavController) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Floating “Camera” button: goes straight to your geotag screen
-        Box(
-            modifier = Modifier
-                .size(140.dp)
-                .background(
-                    brush = Brush.linearGradient(
-                        colors = listOf(Color(0xFF87CEFA), Color(0xFFADD8E6)), // Light to deeper blue
-                    ),
-                    shape = CircleShape
-                )
-                .clickable { nav.navigate("camera") },
-            contentAlignment = Alignment.Center
-        ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Image(
-                    painter = painterResource(id = R.drawable.img), // Replace with your image resource
-                    contentDescription = "Fish",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(CircleShape),
-                    contentScale = ContentScale.FillBounds
-                )
-            }
+        // 👉 Intent to open MainActivity and navigate to the Threat Form
+        val formIntent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            putExtra("navigate_to_form", true) // Pass extra data to MainActivity for navigation
         }
 
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Text(
-            text = "Identify Species",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFFADD8E6)
+        // Creating a PendingIntent for when the notification is clicked
+        val formPendingIntent = PendingIntent.getActivity(
+            context,
+            1,
+            formIntent,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            else
+                PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = "Take or upload photo to start",
-            fontSize = 16.sp,
-            color = Color.Gray
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // This row’s left button → camera, right → classifier
-        ButtonRow("Upload Photo", "Browse Gallery", nav)
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // You can wire these up similarly to other routes later
-        ButtonRow("Report Threat", "View Map", nav)
-
-    }
-}
-
-@Composable
-fun ButtonRow(
-    leftText: String,
-    rightText: String,
-    nav: NavController
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        ButtonBox(text = leftText, modifier = Modifier.weight(1f)) {
-            when (leftText) {
-                "Upload Photo" -> nav.navigate("camera")
-                "Report Threat"  -> { /* TODO: nav.navigate("report_threat") */ }
-            }
-        }
-        ButtonBox(text = rightText, modifier = Modifier.weight(1f)) {
-            when (rightText) {
-                "Browse Gallery" -> nav.navigate("classifier")
-                "View Map"       -> { /* TODO: nav.navigate("map") */ }
-            }
-        }
-    }
-}
-
-@Composable
-fun ButtonBox(
-    text: String,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
-) {
-    Box(
-        modifier = modifier
-            .border(
-                width = 4.dp,
-                color = Color(0xFFD5EEF1), // Light blue border
-                shape = RoundedCornerShape(12.dp)
+        // 🔔 Notification building
+        val notification = NotificationCompat.Builder(context, COUNTER_CHANNEL_ID)
+            .setSmallIcon(R.drawable.baseline_notifications_24)
+            .setContentTitle("Alert 🚨")
+            .setContentText("Wow! You have discovered a new species 🤩.")
+            .setContentIntent(formPendingIntent) // Navigates when the notification is clicked
+            .addAction(
+                R.drawable.baseline_notifications_24,
+                "Go and connect to Researcher/NGOs",
+                formPendingIntent // Reuse the same PendingIntent for the action button
             )
-            .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(Color(0xFF87CEFA), Color(0xFFADD8E6)), // Light to deeper blue
-                ), shape = RoundedCornerShape(12.dp))
+            .setAutoCancel(true) // Notification will be removed once clicked
+            .build()
 
-            .size(120.dp)
-            .clickable(onClick = onClick)
-            .padding(vertical = 12.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = text,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Medium,
-            color = Color.Black
-        )
+        // Notify with a unique ID (using counter as ID here)
+        notificationManager.notify(counter, notification)
+    }
+
+    @SuppressLint("ObsoleteSdkInt")
+    private fun createNotificationChannel() {
+        // Create notification channel for Android O and above
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "Species Discovery Alerts"
+            val description = "Channel for alert notifications"
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val channel = NotificationChannel(COUNTER_CHANNEL_ID, name, importance).apply {
+                this.description = description
+            }
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    companion object {
+        // Unique identifier for the notification channel
+        const val COUNTER_CHANNEL_ID = "counter_channel"
     }
 }
-
