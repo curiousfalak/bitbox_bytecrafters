@@ -83,12 +83,12 @@ fun Botsheet(context: Context) {
             modifier = Modifier.padding(innerPadding)
         ) {
 
-                composable("home") { HomeScreen(navController) }
-                composable("camera") { GeotaggedScreen() } // Add route for CameraX screen
-                composable("classifier") { ClassifierScreen() }
-        composable("sightinghistory") { History() }// Add route for Classifier screen
-            }
-
+            composable("home") { HomeScreen(navController) }
+            composable("camera") { GeotaggedScreen() } // Add route for CameraX screen
+            composable("classifier") { ClassifierScreen() }
+            composable("sightinghistory") { History() }// Add route for Classifier screen
         }
+
     }
+}
 

@@ -1,6 +1,8 @@
 package com.example.mltest.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -9,11 +11,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.mltest.R
+
+
+
 
 @Composable
 fun HomeScreen(nav: NavController) {
@@ -29,25 +39,28 @@ fun HomeScreen(nav: NavController) {
         // Floating “Camera” button: goes straight to your geotag screen
         Box(
             modifier = Modifier
-                .size(80.dp)
-                .background(Color(0xFFADD8E6), shape = CircleShape)
+                .size(140.dp)
+                .background(
+                    brush = Brush.linearGradient(
+                        colors = listOf(Color(0xFF87CEFA), Color(0xFFADD8E6)), // Light to deeper blue
+                    ),
+                    shape = CircleShape
+                )
                 .clickable { nav.navigate("camera") },
             contentAlignment = Alignment.Center
-        ) { Column {
-            Text(
-                text = "NATURE",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color.Black
-            )
-            Text(
-                text = "   LENS",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color.Black
-            )
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Image(
+                    painter = painterResource(id = R.drawable.img), // Replace with your image resource
+                    contentDescription = "Fish",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(CircleShape),
+                    contentScale = ContentScale.FillBounds
+                )
+            }
         }
-        }
+
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -74,7 +87,7 @@ fun HomeScreen(nav: NavController) {
 
         // You can wire these up similarly to other routes later
         ButtonRow("Report Threat", "View Map", nav)
-        Spacer(modifier = Modifier.height(16.dp))
+
     }
 }
 
@@ -111,7 +124,17 @@ fun ButtonBox(
 ) {
     Box(
         modifier = modifier
-            .background(Color(0xFFADD8E6), shape = RoundedCornerShape(12.dp))
+            .border(
+                width = 4.dp,
+                color = Color(0xFFD5EEF1), // Light blue border
+                shape = RoundedCornerShape(12.dp)
+            )
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(Color(0xFF87CEFA), Color(0xFFADD8E6)), // Light to deeper blue
+                ), shape = RoundedCornerShape(12.dp))
+
+            .size(120.dp)
             .clickable(onClick = onClick)
             .padding(vertical = 12.dp),
         contentAlignment = Alignment.Center
@@ -124,3 +147,4 @@ fun ButtonBox(
         )
     }
 }
+
